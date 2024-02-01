@@ -9,6 +9,7 @@ import {
 import {
     AutoImportProviderProject,
     AuxiliaryProject,
+    ConfiguredProject,
     isBackgroundProject,
     isConfiguredProject,
     LogLevel,
@@ -30,6 +31,7 @@ interface ProjectData {
     isClosed: ReturnType<Project["isClosed"]>;
     isOrphan: ReturnType<Project["isOrphan"]>;
     noOpenRef: boolean;
+    deferredClose: ConfiguredProject["deferredClose"];
     autoImportProviderHost: Project["autoImportProviderHost"];
     noDtsResolutionProject: Project["noDtsResolutionProject"];
     originalConfiguredProjects: Project["originalConfiguredProjects"];
@@ -105,6 +107,7 @@ export function patchServiceForStateBaseline(service: ProjectService) {
                 projectDiff = printProperty(PrintPropertyWhen.TruthyOrChangedOrNew, data, "isClosed", project.isClosed(), projectDiff, projectPropertyLogs);
                 projectDiff = printProperty(PrintPropertyWhen.TruthyOrChangedOrNew, data, "isOrphan", !isBackgroundProject(project) && project.isOrphan(), projectDiff, projectPropertyLogs);
                 projectDiff = printProperty(PrintPropertyWhen.TruthyOrChangedOrNew, data, "noOpenRef", isConfiguredProject(project) && !project.hasOpenRef(), projectDiff, projectPropertyLogs);
+                projectDiff = printProperty(PrintPropertyWhen.TruthyOrChangedOrNew, data, "deferredClose", isConfiguredProject(project) && project.deferredClose, projectDiff, projectPropertyLogs);
                 projectDiff = printProperty(PrintPropertyWhen.DefinedOrChangedOrNew, data, "autoImportProviderHost", project.autoImportProviderHost, projectDiff, projectPropertyLogs, project.autoImportProviderHost ? project.autoImportProviderHost.projectName : project.autoImportProviderHost);
                 projectDiff = printProperty(PrintPropertyWhen.DefinedOrChangedOrNew, data, "noDtsResolutionProject", project.noDtsResolutionProject, projectDiff, projectPropertyLogs, project.noDtsResolutionProject ? project.noDtsResolutionProject.projectName : project.noDtsResolutionProject);
                 return printSetPropertyAndCreateStatementLog(
@@ -126,6 +129,7 @@ export function patchServiceForStateBaseline(service: ProjectService) {
                 isClosed: project.isClosed(),
                 isOrphan: !isBackgroundProject(project) && project.isOrphan(),
                 noOpenRef: isConfiguredProject(project) && !project.hasOpenRef(),
+                deferredClose: isConfiguredProject(project) && project.deferredClose,
                 autoImportProviderHost: project.autoImportProviderHost,
                 noDtsResolutionProject: project.noDtsResolutionProject,
                 originalConfiguredProjects: project.originalConfiguredProjects && new Set(project.originalConfiguredProjects),
