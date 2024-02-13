@@ -45,6 +45,7 @@ interface ScriptInfoData {
     open: ReturnType<ScriptInfo["isScriptOpen"]>;
     version: ReturnType<TextStorage["getVersion"]>;
     pendingReloadFromDisk: TextStorage["pendingReloadFromDisk"];
+    deferredDelete: ScriptInfo["deferredDelete"];
     sourceMapFilePath: Exclude<ScriptInfo["sourceMapFilePath"], SourceMapFileWatcher> | SourceMapFileWatcherData | undefined;
     declarationInfoPath: ScriptInfo["declarationInfoPath"];
     sourceInfos: ScriptInfo["sourceInfos"];
@@ -148,6 +149,7 @@ export function patchServiceForStateBaseline(service: ProjectService) {
                 infoDiff = printProperty(PrintPropertyWhen.Changed, data, "open", isOpen, infoDiff, infoPropertyLogs);
                 infoDiff = printProperty(PrintPropertyWhen.Always, data, "version", info.textStorage.getVersion(), infoDiff, infoPropertyLogs);
                 infoDiff = printProperty(PrintPropertyWhen.TruthyOrChangedOrNew, data, "pendingReloadFromDisk", info.textStorage.pendingReloadFromDisk, infoDiff, infoPropertyLogs);
+                infoDiff = printProperty(PrintPropertyWhen.TruthyOrChangedOrNew, data, "deferredDelete", info.deferredDelete, infoDiff, infoPropertyLogs);
                 infoDiff = printScriptInfoSourceMapFilePath(data, info, infoDiff, infoPropertyLogs);
                 infoDiff = printProperty(PrintPropertyWhen.DefinedOrChangedOrNew, data, "declarationInfoPath", info.declarationInfoPath, infoDiff, infoPropertyLogs);
                 infoDiff = printSetPropertyValueWorker(PrintPropertyWhen.DefinedOrChangedOrNew, data?.sourceInfos, "sourceInfos", info.sourceInfos, infoDiff, infoPropertyLogs, identity);
@@ -182,6 +184,7 @@ export function patchServiceForStateBaseline(service: ProjectService) {
                 sourceInfos: info.sourceInfos && new Set(info.sourceInfos),
                 documentPositionMapper: info.documentPositionMapper,
                 containingProjects: new Set(info.containingProjects),
+                deferredDelete: info.deferredDelete,
             }),
         );
     }
